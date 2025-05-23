@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jdk
 
-# 필수 패키지 + Chrome + ChromeDriver 설치
+# 필요한 패키지 설치
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
@@ -17,25 +17,30 @@ RUN apt-get update && apt-get install -y \
     libu2f-udev \
     libvulkan1 \
     xdg-utils \
-    chromium-browser \
-    chromium-driver \
     && apt-get clean
 
-# chromedriver 심볼릭 링크 (표준 경로로 연결)
-RUN ln -s /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+# Google Chrome 설치
+RUN wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt-get install -y ./google-chrome.deb && \
+    rm google-chrome.deb
 
-# 환경 변수 설정
-ENV CHROME_BIN=/usr/bin/chromium-browser
+# ChromeDriver 설치 (버전 자동 매칭)
+RUN CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+') && \
+    CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | grep -A10 "$CHROME_VERSION" | grep "linux64" | grep "chromedriver" | grep -o 'https://[^"]*') && \
+    wget -q -O chromedriver.zip "$CHROMEDRIVER_VERSION" && \
+    unzip chromedriver.zip && \
+    mv chromedriver /usr/local/bin/chromedriver && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm chromedriver.zip
+
+# 환경 변수
+ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER_PATH=/usr/local/bin/chromedriver
 
 WORKDIR /app
 
-# 코드 복사 + 빌드
 COPY . .
 RUN ./gradlew build -x test
 
-# 포트 열기
 EXPOSE 8080
-
-# 앱 실행
 CMD ["java", "-jar", "build/libs/startoffice-0.0.1-SNAPSHOT.jar"]
