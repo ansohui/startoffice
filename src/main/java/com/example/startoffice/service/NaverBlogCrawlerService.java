@@ -20,7 +20,7 @@ public class NaverBlogCrawlerService {
         List<String> blogPosts = new ArrayList<>();
 
         // Chrome WebDriver 설정
-        System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
+        //System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
 
         // Chrome 옵션 설정
         ChromeOptions options = new ChromeOptions();

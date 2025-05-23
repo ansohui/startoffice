@@ -42,3 +42,4 @@ RUN ./gradlew build -x test
 
 EXPOSE 8080
 CMD ["java", "-jar", "build/libs/startoffice-0.0.1-SNAPSHOT.jar"]
+RUN ls -al /usr/local/bin/chromedriver || echo "❌ chromedriver 설치 실패"
