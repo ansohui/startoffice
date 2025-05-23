@@ -24,7 +24,7 @@ public class NaverBlogCrawlerService {
 
         // Chrome 옵션 설정
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Headless 모드 비활성화
+        options.addArguments("--headless=new"); // Headless 모드 비활성화
         options.addArguments("--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
         options.addArguments("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36");
         options.addArguments("--disable-blink-features=AutomationControlled");
