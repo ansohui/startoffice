@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     gnupg \
+    openjdk-17-jdk \
     ca-certificates \
     libnss3 \
     libgconf-2-4 \
