@@ -10,18 +10,18 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Duration;
-
+import org.springframework.cache.annotation.Cacheable;
 import com.example.startoffice.app.dto.BlogDto.BlogGetDto;
 
 @Service
 public class NaverBlogCrawlerService {
-
+    @Cacheable(value = "blogPosts", key = "#blogId")
     public List<BlogGetDto> getBlogPosts(String blogId) {
         List<BlogGetDto> blogPosts = new ArrayList<>();
 
         // Chrome 옵션 설정
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
+        options.addArguments("--headless=chrome");
         options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
