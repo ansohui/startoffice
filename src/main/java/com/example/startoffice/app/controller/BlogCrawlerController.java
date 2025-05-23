@@ -1,5 +1,6 @@
 package com.example.startoffice.app.controller;
 
+import com.example.startoffice.app.dto.BlogDto;
 import com.example.startoffice.service.NaverBlogCrawlerService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class BlogCrawlerController {
     }
 
     @GetMapping("/naver")
-    public List<String> getNaverBlogPosts(@RequestParam String blogId) {
+    public List<BlogDto.BlogGetDto> getNaverBlogPosts(@RequestParam String blogId) {
         return blogCrawlerService.getBlogPosts(blogId);
     }
 }

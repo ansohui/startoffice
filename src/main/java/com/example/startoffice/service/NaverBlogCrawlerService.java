@@ -10,56 +10,45 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Duration;
-
+import com.example.startoffice.app.dto.BlogDto.BlogGetDto;
 @Service
 public class NaverBlogCrawlerService {
 
-    private static final String BLOG_URL = "https://m.blog.naver.com/";
-
-    public List<String> getBlogPosts(String blogId) {
-        List<String> blogPosts = new ArrayList<>();
-
-        // Chrome WebDriver 설정
-        //System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver");
+    public List<BlogGetDto> getBlogPosts(String blogId) {
+        List<BlogGetDto> blogPosts = new ArrayList<>();
 
         // Chrome 옵션 설정
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new"); // Headless 모드 비활성화
-        options.addArguments("--disable-gpu", "--no-sandbox", "--disable-dev-shm-usage");
-        options.addArguments("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-        options.setExperimentalOption("useAutomationExtension", false);
+        options.addArguments("--headless=new");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("user-agent=Mozilla/5.0");
 
         WebDriver driver = new ChromeDriver(options);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
         try {
-            String url = BLOG_URL + blogId;
+            String url = "https://blog.naver.com/" + blogId;
             System.out.println("크롤링할 URL: " + url);
             driver.get(url);
 
-            // ✅ JavaScript 로딩 대기
-            new WebDriverWait(driver, Duration.ofSeconds(20)).until(
-                    webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete")
+            // iframe으로 전환
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("mainFrame"));
+
+            // XPath로 <a class="title"> 요소들 찾기
+            List<WebElement> elements = wait.until(
+                    ExpectedConditions.presenceOfAllElementsLocatedBy(
+                            By.xpath("//a[contains(@class, 'title')]")
+                    )
             );
-
-            // ✅ 페이지 소스 확인
-            System.out.println(driver.getPageSource());
-
-            // ✅ XPath 방식으로 제목 가져오기
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//strong[contains(@class, 'title__')]")));
-            List<WebElement> elements = driver.findElements(By.xpath("//strong[contains(@class, 'title__')]"));
 
             System.out.println("✅ 가져온 게시글 개수: " + elements.size());
 
-            if (elements.isEmpty()) {
-                System.out.println("🚨 게시글을 찾을 수 없음! 네이버가 차단했거나 HTML 구조가 변경됨.");
-            }
-
             for (WebElement element : elements) {
-                String title = element.getText();  // 글 제목
-                blogPosts.add(title);
+                String title = element.getText().trim();
+                String link = element.getAttribute("href").trim();
+                blogPosts.add(new BlogGetDto(title,link));
             }
 
         } catch (Exception e) {
