@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Duration;
+
 import com.example.startoffice.app.dto.BlogDto.BlogGetDto;
+
 @Service
 public class NaverBlogCrawlerService {
 
@@ -36,10 +38,10 @@ public class NaverBlogCrawlerService {
             // iframe으로 전환
             wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt("mainFrame"));
 
-            // XPath로 <a class="title"> 요소들 찾기
+            // XPath로 <a class="pcol2"> 요소 찾기
             List<WebElement> elements = wait.until(
                     ExpectedConditions.presenceOfAllElementsLocatedBy(
-                            By.xpath("//a[contains(@class, 'title')]")
+                            By.xpath("//a[@class='pcol2']")
                     )
             );
 
@@ -47,8 +49,10 @@ public class NaverBlogCrawlerService {
 
             for (WebElement element : elements) {
                 String title = element.getText().trim();
-                String link = element.getAttribute("href").trim();
-                blogPosts.add(new BlogGetDto(title,link));
+                String relativeUrl = element.getAttribute("href").trim();
+                String fullUrl = "https://blog.naver.com" + relativeUrl;
+
+                blogPosts.add(new BlogGetDto(title, fullUrl));
             }
 
         } catch (Exception e) {
