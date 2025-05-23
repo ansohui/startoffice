@@ -50,9 +50,9 @@ public class NaverBlogCrawlerService {
             for (WebElement element : elements) {
                 String title = element.getText().trim();
                 String relativeUrl = element.getAttribute("href").trim();
-                String fullUrl = "https://blog.naver.com" + relativeUrl;
 
-                blogPosts.add(new BlogGetDto(title, fullUrl));
+
+                blogPosts.add(new BlogGetDto(title, relativeUrl));
             }
 
         } catch (Exception e) {
