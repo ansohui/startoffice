@@ -38,6 +38,7 @@ public class NaverBlogCrawlerService {
                     .map(p -> new BlogGetDto(p.getTitle(), p.getUrl()))
                     .collect(Collectors.toList());
         }
+            blogPostRepository.deleteByBlogId(blogId);
             List<BlogGetDto> blogPosts = new ArrayList<>();
 
             // Chrome 옵션 설정
