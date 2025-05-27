@@ -75,6 +75,14 @@ public class NaverBlogCrawlerService {
 
 
                     blogPosts.add(new BlogGetDto(title, relativeUrl));
+
+                    BlogPost post = BlogPost.builder()
+                            .blogId(blogId)
+                            .title(title)
+                            .url(relativeUrl)
+                            .crawledAt(now)
+                            .build();
+                    blogPostRepository.save(post);
                 }
 
             } catch (Exception e) {
